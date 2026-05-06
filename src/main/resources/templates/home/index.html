@@ -1,265 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head th:replace="~{fragments/layout :: header-files}">
     <title>ShieldGuard Assurance | ICMS Portal</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #0f172a;
-            --accent: #0ea5e9;
-            --accent-hover: #0284c7;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --bg-glass: rgba(15, 23, 42, 0.8);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        body {
-            background-color: var(--primary);
-            color: var(--text-main);
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        /* Hero Background */
-        .hero-container {
-            position: relative;
-            height: 100vh;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9)),
-                url('images/hero.png') no-repeat center center/cover;
-        }
-
-        /* Navbar */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 1.5rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            background: rgba(15, 23, 42, 0.4);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo span {
-            color: var(--accent);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2.5rem;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 400;
-            transition: var(--transition);
-            font-size: 0.95rem;
-        }
-
-        .nav-links a:hover {
-            color: var(--accent);
-        }
-
-        /* Hero Content */
-        .hero-content {
-            max-width: 800px;
-            text-align: center;
-            padding: 0 2rem;
-            animation: fadeIn 1s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        h1 {
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            letter-spacing: -2px;
-        }
-
-        h1 span {
-            background: linear-gradient(90deg, #0ea5e9, #6366f1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            margin-bottom: 2.5rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .cta-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-        }
-
-        .btn {
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: var(--transition);
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-            border: none;
-            box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2);
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(14, 165, 233, 0.3);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--text-main);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--text-main);
-        }
-
-        /* Features Section */
-        .features {
-            padding: 8rem 5%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            background: #020617;
-        }
-
-        .feature-card {
-            background: #1e293b;
-            padding: 3rem 2.5rem;
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: var(--transition);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--accent);
-            background: #233149;
-        }
-
-        .feature-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(14, 165, 233, 0.1);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            color: var(--accent);
-        }
-
-        .feature-card h3 {
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-        }
-
-        .feature-card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        /* Footer */
-        footer {
-            padding: 4rem 5%;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            text-align: center;
-            background: #0f172a;
-        }
-
-        .footer-text {
-            color: var(--text-muted);
-            font-size: 0.875rem;
-        }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            h1 {
-                font-size: 3rem;
-            }
-
-            .cta-group {
-                flex-direction: column;
-            }
-        }
-    </style>
 </head>
+<link rel="stylesheet" th:href="@{/css/home.css}">
 
 <body>
-
-    <nav>
-        <div class="logo">Shield<span>Guard</span></div>
-        <div class="nav-links">
-            <a href="#">Dashboard</a>
-            <a href="#">My Policies</a>
-            <a href="#">Claims</a>
-            <a href="#">Support</a>
-        </div>
-        <a href="#" class="btn btn-outline" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Login</a>
-    </nav>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
     <section class="hero-container">
         <div class="hero-content">
@@ -267,13 +15,14 @@
             <p class="hero-subtitle">Experience the future of insurance. Fast, transparent, and secure management for
                 all your protection needs.</p>
             <div class="cta-group">
-                <a href="#" class="btn btn-primary">File a Claim</a>
-                <a href="#" class="btn btn-outline">Explore Policies</a>
+                <a th:href="@{/claims}" class="btn btn-primary">File a Claim</a>
+                <a th:href="@{/policies}" class="btn btn-outline">Explore Policies</a>
             </div>
         </div>
     </section>
 
     <section class="features">
+        <!-- ... existing features ... -->
         <div class="feature-card">
             <div class="feature-icon">⚡</div>
             <h3>Instant Submissions</h3>
@@ -282,8 +31,7 @@
         <div class="feature-card">
             <div class="feature-icon">🛡️</div>
             <h3>Smart Protection</h3>
-            <p>Our intelligent system dynamically assesses risks to provide the best possible coverage tailored to you.
-            </p>
+            <p>Our intelligent system dynamically assesses risks to provide the best possible coverage tailored to you.</p>
         </div>
         <div class="feature-card">
             <div class="feature-icon">📊</div>
@@ -292,13 +40,7 @@
         </div>
     </section>
 
-    <footer>
-        <div class="logo" style="justify-content: center; margin-bottom: 1.5rem;">Shield<span>Guard</span> Assurance
-        </div>
-        <p class="footer-text">&copy; 2026 ShieldGuard Assurance. All rights reserved. Built for security & reliability.
-        </p>
-    </footer>
-
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 
 </html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: header-files}">
+    <title>Add Document | ShieldGuard</title>
+</head>
+
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <a th:href="@{/policies/{id}(id=${policyId})}" style="color: var(--accent); text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;">
+                ← Back to Policy Details
+            </a>
+            
+            <h2 style="margin-bottom: 1.5rem;">Add Document</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Upload identity proof, medical records, or other supporting files for your policy.</p>
+
+            <form th:action="@{/policies/{id}/add-document(id=${policyId})}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Document Name</label>
+                    <input type="text" class="form-control" name="fileName" placeholder="e.g. Identity Card" required>
+                </div>
+                <div class="form-group">
+                    <label>Select File</label>
+                    <input type="file" class="form-control" name="file" style="padding: 0.5rem;" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Upload Document</button>
+            </form>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+
+</html>

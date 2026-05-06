@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: header-files}">
+</head>
+<link rel="stylesheet" th:href="@{/css/auth.css}">
+<link rel="stylesheet" th:href="@{/css/support.css}">
+
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div style="padding: 8rem 5% 4rem;">
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <h1 style="margin-bottom: 1rem;">How can we <span>help</span> you?</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 4rem;">Our support team is available 24/7 to assist with your insurance needs.</p>
+
+            <div class="policy-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); text-align: left;">
+                <div class="policy-card">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">📞</div>
+                    <h3 style="margin-bottom: 0.5rem;">Call Us</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">+1 (800) SHIELD-GUARD</p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Available 24/7</p>
+                </div>
+                <div class="policy-card">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">✉️</div>
+                    <h3 style="margin-bottom: 0.5rem;">Email Support</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">support@shieldguard.com</p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Response within 2h</p>
+                </div>
+                <div class="policy-card">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">💬</div>
+                    <h3 style="margin-bottom: 0.5rem;">Live Chat</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Chat with an agent</p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Instant assistance</p>
+                </div>
+            </div>
+
+            <div class="auth-card" style="margin: 4rem auto; text-align: left; max-width: 100%;">
+                <h3 style="margin-bottom: 1.5rem;">Send us a Message</h3>
+                <form>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" class="form-control" placeholder="What do you need help with?">
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea class="form-control" rows="5" placeholder="Your message..."></textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary" style="padding: 0.75rem 2.5rem;">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+
+</html>

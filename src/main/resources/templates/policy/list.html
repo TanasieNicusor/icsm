@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: header-files}">
+</head>
+<link rel="stylesheet" th:href="@{/css/policy.css}">
+
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div style="padding: 8rem 5% 4rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1>My Insurance <span>Policies</span></h1>
+            <a th:href="@{/policies/add}" class="btn btn-primary">Create Policy</a>
+        </div>
+        
+        <div class="policy-grid">
+            <div class="policy-card" th:each="policy : ${policies}">
+                <div th:class="${'status-badge ' + (policy.status.name() == 'Active' ? 'status-active' : 'status-pending')}" 
+                     th:text="${policy.status}">Active</div>
+                <h3 th:text="${policy.policyType.name}" style="margin-bottom: 0.5rem;">Life Insurance Premium</h3>
+                <p th:text="${'Policy #: ' + policy.id}" style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Policy #: POL-12345</p>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                    <div>
+                        <span style="display: block; font-size: 0.75rem; color: var(--text-muted);">Coverage</span>
+                        <b th:text="${'$' + policy.coverageAmount}">$500,000</b>
+                    </div>
+                    <a th:href="@{/policies/{id}(id=${policy.id})}" class="btn btn-outline" style="padding: 0.5rem 1.25rem; font-size: 0.85rem;">View Details</a>
+                </div>
+            </div>
+
+            <div class="policy-card" th:if="${#lists.isEmpty(policies)}" style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
+
+                <a th:href="@{/}" class="btn btn-primary" style="margin-top: 1rem; padding: 0.75rem 2rem; font-size: 0.9rem;">Explore Plans</a>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+
+</html>
