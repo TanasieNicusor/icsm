@@ -27,9 +27,6 @@ public class PolicyController {
     public String listPolicies(Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
         
-        // One-time cleanup for ID 2 as requested
-        policyService.getPolicyById(2L).ifPresent(p -> policyService.deletePolicy(2L));
-        
         User user = userRepository.findByEmail(principal.getName()).orElseThrow();
         
         if (user.getRole() == com.example.icsm.model.enums.UserRole.Agent) {
