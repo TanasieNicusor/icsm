@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="header-files">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+</head>
+
+<body>
+
+    <nav th:fragment="navbar">
+        <div class="logo"><a th:href="@{/}" style="text-decoration: none; color: inherit;">Shield<span>Guard</span></a></div>
+        <div class="nav-links">
+            <a th:href="@{/}">Dashboard</a>
+            <a th:href="@{/policies}">My Policies</a>
+            <a th:href="@{/claims}">Claims</a>
+            <a th:href="@{/support}">Support</a>
+        </div>
+        <div class="nav-right">
+            <div th:replace="~{fragments/notifications :: dropdown}"></div>
+            
+            <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center; gap: 1rem;">
+                <span style="font-size: 0.9rem; color: #94a3b8;">Hello, <span th:text="${#authentication.name}" style="color: #6366f1; font-weight: 600;">User</span></span>
+                <a th:href="@{/logout}" class="btn btn-outline" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Logout</a>
+            </div>
+            <div sec:authorize="isAnonymous()" style="display: flex; gap: 0.5rem;">
+                <a th:href="@{/login}" class="btn btn-outline" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Login</a>
+                <a th:href="@{/register}" class="btn btn-primary" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <footer th:fragment="footer">
+        <div class="logo" style="justify-content: center; margin-bottom: 1.5rem;">Shield<span>Guard</span> Assurance</div>
+        <p class="footer-text">&copy; 2026 ShieldGuard Assurance. All rights reserved. Built for security & reliability.</p>
+    </footer>
+
+</body>
+
+</html>
