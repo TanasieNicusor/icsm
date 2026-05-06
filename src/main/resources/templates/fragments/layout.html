@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="header-files">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+</head>
+
+<body>
+
+    <nav th:fragment="navbar">
+        <div class="logo"><a th:href="@{/}" style="text-decoration: none; color: inherit;">Shield<span>Guard</span></a></div>
+        <div class="nav-links">
+            <a th:href="@{/}">Dashboard</a>
+            <a th:href="@{/policies}">My Policies</a>
+            <a th:href="@{/claims}">Claims</a>
+            <a th:href="@{/support}">Support</a>
+        </div>
+        <div class="nav-right">
+            <div class="notification-bell">
+                🔔 <span class="notification-badge" th:if="${unreadCount > 0}" th:text="${unreadCount}">3</span>
+                <div class="notification-dropdown">
+                    <div class="notif-item" th:each="notif : ${notifications}">
+                        <b th:text="${notif.title}">Policy Update</b>
+                        <span th:text="${notif.message}">Your health policy has been renewed successfully.</span>
+                    </div>
+                    <div class="notif-item" th:if="${#lists.isEmpty(notifications)}">
+                        <span>No new notifications</span>
+                    </div>
+                </div>
+            </div>
+            <a th:href="@{/login}" class="btn btn-outline" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Login</a>
+        </div>
+    </nav>
+
+    <footer th:fragment="footer">
+        <div class="logo" style="justify-content: center; margin-bottom: 1.5rem;">Shield<span>Guard</span> Assurance</div>
+        <p class="footer-text">&copy; 2026 ShieldGuard Assurance. All rights reserved. Built for security & reliability.</p>
+    </footer>
+
+</body>
+
+</html>

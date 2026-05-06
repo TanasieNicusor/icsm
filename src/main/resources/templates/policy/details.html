@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: header-files}">
+</head>
+<link rel="stylesheet" th:href="@{/css/policy.css}">
+
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div style="padding: 8rem 5% 4rem;">
+        <div style="max-width: 1000px; margin: 0 auto;">
+            <a th:href="@{/policies}" style="color: var(--accent); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;">
+                ← Back to My Policies
+            </a>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+                <div>
+                    <h1 th:text="${policy.policyType.name}" style="margin-bottom: 0.5rem;">Life Insurance Premium</h1>
+                    <p style="color: var(--text-muted);" th:text="${'Policy ID: ' + policy.id}">Policy ID: POL-12345</p>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <a th:href="@{/policies/{id}/edit(id=${policy.id})}" class="btn btn-outline" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Edit Policy</a>
+                    <form th:action="@{/policies/{id}/delete(id=${policy.id})}" method="post" onsubmit="return confirm('Delete this policy?')">
+                        <button type="submit" class="btn btn-outline" style="padding: 0.6rem 1.5rem; font-size: 0.85rem; color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">Delete</button>
+                    </form>
+                </div>
+            </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
+                            <span th:class="${'status-badge ' + (policy.status.name() == 'Active' ? 'status-active' : 'status-pending')}" 
+                                  th:text="${policy.status}">Active</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Coverage Amount</span>
+                            <span class="detail-value" th:text="${'$' + policy.coverageAmount}">$500,000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Start Date</span>
+                            <span class="detail-value" th:text="${policy.startDate}">2026-01-01</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">End Date</span>
+                            <span class="detail-value" th:text="${policy.endDate}">2027-01-01</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Premium Amount</span>
+                            <span class="detail-value" th:text="${'$' + policy.premiumAmount}">$120.00</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Payment Frequency</span>
+                            <span class="detail-value" th:text="${policy.paymentFrequency}">Monthly</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 3rem;">
+                        <h3 style="margin-bottom: 1.5rem;">Policy Description</h3>
+                        <p style="color: var(--text-muted); line-height: 1.8;" th:text="${policy.policyType.description}">
+                            This policy provides comprehensive coverage for life events, ensuring financial stability for your loved ones.
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="background: #1e293b; padding: 2rem; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <h3 style="margin-bottom: 1.5rem; font-size: 1.1rem;">Documents</h3>
+                        
+                        <div th:each="doc : ${documents}" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; padding: 0.75rem; background: #0f172a; border-radius: 12px;">
+                            <span style="font-size: 1.5rem;">📄</span>
+                            <div style="flex: 1;">
+                                <span th:text="${doc.fileName}" style="display: block; font-size: 0.85rem; font-weight: 600;">id_card.pdf</span>
+                                <span th:text="${doc.fileType}" style="font-size: 0.7rem; color: var(--text-muted);">PDF</span>
+                            </div>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(documents)}" style="text-align: center; padding: 1rem; color: var(--text-muted); font-size: 0.85rem;">
+                            No documents uploaded yet.
+                        </div>
+
+                        <a th:href="@{/policies/{id}/add-document(id=${policy.id})}" class="btn btn-outline" style="width: 100%; margin-top: 1.5rem; padding: 0.75rem; font-size: 0.85rem; border-style: dashed;">
+                            + Add Document
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+
+</html>
