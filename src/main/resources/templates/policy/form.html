@@ -13,51 +13,56 @@
         <div class="auth-card" style="max-width: 600px;">
             <h2 style="margin-bottom: 1rem;" th:text="${policy.id == null ? 'Create New Policy' : 'Edit Policy'}">Manage Policy</h2>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Fill in the details to setup a new insurance policy for a customer.</p>
+            
+            <div th:if="${error}" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 0.75rem; border-radius: 0.75rem; margin-bottom: 1.5rem; font-size: 0.875rem; text-align: center;" th:text="${error}">
+                Error message goes here
+            </div>
 
             <form th:action="${policy.id == null ? '/policies/add' : '/policies/' + policy.id + '/edit'}" method="post">
                 <input type="hidden" name="id" th:value="${policy.id}">
                 
                 <div class="form-group">
-                    <label>Policy Type</label>
-                    <select name="policyType.id" class="form-control" required>
-                        <option value="" disabled th:selected="${policy.policyType == null}">Select a plan</option>
-                        <option th:each="type : ${policyTypes}" 
-                                th:value="${type.id}" 
-                                th:text="${type.name}"
-                                th:selected="${policy.policyType != null && policy.policyType.id == type.id}">Premium Health Plan</option>
-                    </select>
+                    <label>Policy Name</label>
+                    <input type="text" name="name" class="form-control" th:value="${policy.name}" placeholder="e.g. ShieldGuard Life Premium" required>
+                    <small style="color: var(--text-muted); font-size: 0.75rem;">Give your generic plan a descriptive name.</small>
                 </div>
 
                 <div class="form-group">
-                    <label>Coverage Amount ($)</label>
-                    <input type="number" name="coverageAmount" class="form-control" th:value="${policy.coverageAmount}" placeholder="500000.00" step="0.01" required>
+                    <label>Coverage Amount</label>
+                    <div style="display: flex; align-items: center; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 0.75rem; overflow: hidden;">
+                        <span style="padding: 0.75rem 1rem; background: rgba(255,255,255,0.05); color: var(--text-dim); border-right: 1px solid var(--glass-border);">$</span>
+                        <input type="number" name="coverageAmount" style="background: transparent; border: none; flex: 1; padding: 0.75rem; color: white; outline: none;" th:value="${policy.coverageAmount}" placeholder="500000.00" step="0.01" required>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Premium Amount ($)</label>
-                    <input type="number" name="premiumAmount" class="form-control" th:value="${policy.premiumAmount}" placeholder="120.00" step="0.01" required>
+                    <label>Premium Amount</label>
+                    <div style="display: flex; align-items: center; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 0.75rem; overflow: hidden;">
+                        <span style="padding: 0.75rem 1rem; background: rgba(255,255,255,0.05); color: var(--text-dim); border-right: 1px solid var(--glass-border);">$</span>
+                        <input type="number" name="premiumAmount" style="background: transparent; border: none; flex: 1; padding: 0.75rem; color: white; outline: none;" th:value="${policy.premiumAmount}" placeholder="120.00" step="0.01" required>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label>Payment Frequency</label>
-                    <select name="paymentFrequency" class="form-control" required>
-                        <option th:each="freq : ${T(com.example.icsm.model.enums.PaymentFrequency).values()}" 
-                                th:value="${freq}" 
-                                th:text="${freq}"
-                                th:selected="${policy.paymentFrequency == freq}">monthly</option>
-                    </select>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                        <div th:each="freq : ${T(com.example.icsm.model.enums.PaymentFrequency).values()}" style="flex: 1; position: relative;">
+                            <input type="radio" name="paymentFrequency" th:id="${'freq_' + freq}" th:value="${freq}" 
+                                   th:checked="${policy.paymentFrequency == freq}" style="display: none;" required>
+                            <label th:for="${'freq_' + freq}" style="display: block; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 0.75rem; text-align: center; cursor: pointer; transition: all 0.3s ease; font-size: 0.85rem;" th:text="${freq}">monthly</label>
+                        </div>
+                    </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group">
-                        <label>Start Date</label>
-                        <input type="date" name="startDate" class="form-control" th:value="${policy.startDate}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>End Date</label>
-                        <input type="date" name="endDate" class="form-control" th:value="${policy.endDate}" required>
-                    </div>
-                </div>
+                <style>
+                    input[type="radio"]:checked + label {
+                        background: var(--primary) !important;
+                        border-color: var(--primary) !important;
+                        color: white !important;
+                        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+                    }
+                </style>
+
 
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
                     <a th:href="@{/policies}" class="btn btn-outline" style="flex: 1; text-align: center;">Cancel</a>

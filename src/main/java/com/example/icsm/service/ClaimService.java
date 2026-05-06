@@ -18,6 +18,10 @@ public class ClaimService {
         return claimRepository.findByCustomerId(customerId);
     }
 
+    public List<Claim> getAllClaims() {
+        return claimRepository.findAll();
+    }
+
     public Optional<Claim> getClaimById(Long id) {
         return claimRepository.findById(id);
     }

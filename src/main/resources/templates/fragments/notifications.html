@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="dropdown" class="notification-bell">
+        🔔 <span class="notification-badge" th:if="${unreadCount > 0}" th:text="${unreadCount}">0</span>
+        <div class="notification-dropdown">
+            <div class="notif-item" th:each="notif : ${notifications}">
+                <b th:text="${notif.title}">Title</b>
+                <span th:text="${notif.message}">Message</span>
+            </div>
+            <div class="notif-item" th:if="${#lists.isEmpty(notifications)}">
+                <span>No new notifications</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

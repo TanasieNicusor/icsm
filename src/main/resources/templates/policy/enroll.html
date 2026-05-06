@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: header-files}">
+</head>
+<link rel="stylesheet" th:href="@{/css/auth.css}">
+<link rel="stylesheet" th:href="@{/css/policy.css}">
+
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="auth-container">
+        <div class="auth-card" style="max-width: 600px;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 th:text="${policy.name}">Plan Name</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Finalize your insurance coverage details.</p>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 1rem; margin-bottom: 2rem; border: 1px solid var(--glass-border);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: center;">
+                    <div>
+                        <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Coverage</span>
+                        <b style="font-size: 1.25rem;" th:text="${'$' + policy.coverageAmount}">$500,000</b>
+                    </div>
+                    <div>
+                        <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Premium</span>
+                        <b style="font-size: 1.25rem;" th:text="${'$' + policy.premiumAmount + ' / ' + policy.paymentFrequency}">$120 / monthly</b>
+                    </div>
+                </div>
+            </div>
+
+            <form th:action="@{/policies/{id}/purchase(id=${policy.id})}" method="post">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                    <div class="form-group">
+                        <label>Coverage Start Date</label>
+                        <input type="date" name="startDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Coverage End Date</label>
+                        <input type="date" name="endDate" class="form-control" required>
+                    </div>
+                </div>
+
+                <div style="background: rgba(99, 102, 241, 0.1); padding: 1rem; border-radius: 0.75rem; margin-bottom: 2rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                    <span style="color: var(--primary);">ℹ️</span>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">By clicking Purchase, you agree to the terms of the insurance agreement. Your coverage will begin on the selected start date.</p>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <a th:href="@{/policies/browse}" class="btn btn-outline" style="flex: 1; text-align: center;">Back to Plans</a>
+                    <button type="submit" class="btn btn-primary" style="flex: 2;">Confirm & Purchase</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+
+</html>

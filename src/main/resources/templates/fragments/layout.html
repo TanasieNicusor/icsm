@@ -16,24 +16,31 @@
         <div class="logo"><a th:href="@{/}" style="text-decoration: none; color: inherit;">Shield<span>Guard</span></a></div>
         <div class="nav-links">
             <a th:href="@{/}">Dashboard</a>
-            <a th:href="@{/policies}">My Policies</a>
-            <a th:href="@{/claims}">Claims</a>
+            
+            <!-- Always visible -->
+            <a th:href="@{/policies/browse}">Browse Policies</a>
+            
+            <!-- Customer Links -->
+            <a sec:authorize="hasRole('Customer')" th:href="@{/policies}">My Policies</a>
+            <a sec:authorize="hasRole('Customer')" th:href="@{/claims/file}">Make Claims</a>
+            
+            <!-- Agent Links -->
+            <a sec:authorize="hasRole('Agent')" th:href="@{/policies}">My Policies</a>
+            <a sec:authorize="hasRole('Agent')" th:href="@{/claims}">Review Claims</a>
+            
             <a th:href="@{/support}">Support</a>
         </div>
         <div class="nav-right">
-            <div class="notification-bell">
-                🔔 <span class="notification-badge" th:if="${unreadCount > 0}" th:text="${unreadCount}">3</span>
-                <div class="notification-dropdown">
-                    <div class="notif-item" th:each="notif : ${notifications}">
-                        <b th:text="${notif.title}">Policy Update</b>
-                        <span th:text="${notif.message}">Your health policy has been renewed successfully.</span>
-                    </div>
-                    <div class="notif-item" th:if="${#lists.isEmpty(notifications)}">
-                        <span>No new notifications</span>
-                    </div>
-                </div>
+            <div th:replace="~{fragments/notifications :: dropdown}"></div>
+            
+            <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center; gap: 1rem;">
+                <span style="font-size: 0.9rem; color: #94a3b8;">Hello, <span th:text="${#authentication.name}" style="color: #6366f1; font-weight: 600;">User</span></span>
+                <a th:href="@{/logout}" class="btn btn-outline" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Logout</a>
             </div>
-            <a th:href="@{/login}" class="btn btn-outline" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Login</a>
+            <div sec:authorize="isAnonymous()" style="display: flex; gap: 0.5rem;">
+                <a th:href="@{/login}" class="btn btn-outline" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Login</a>
+                <a th:href="@{/register}" class="btn btn-primary" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Register</a>
+            </div>
         </div>
     </nav>
 

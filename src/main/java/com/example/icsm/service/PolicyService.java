@@ -26,6 +26,10 @@ public class PolicyService {
         return policyRepository.findByCustomerId(customerId);
     }
 
+    public List<Policy> getPoliciesByAgent(Long agentId) {
+        return policyRepository.findByAgentId(agentId);
+    }
+
     public Optional<Policy> getPolicyById(Long id) {
         return policyRepository.findById(id);
     }
