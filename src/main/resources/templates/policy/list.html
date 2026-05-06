@@ -10,16 +10,18 @@
 
     <div style="padding: 8rem 5% 4rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h1>My Insurance <span>Policies</span></h1>
-            <a th:href="@{/policies/add}" class="btn btn-primary">Create Policy</a>
+            <h1 th:text="${isAgent ? 'All Insurance Policies' : 'My Insurance Policies'}">My Insurance <span>Policies</span></h1>
+            <a sec:authorize="hasRole('Agent')" th:href="@{/policies/add}" class="btn btn-primary">Create Policy</a>
         </div>
         
         <div class="policy-grid">
             <div class="policy-card" th:each="policy : ${policies}">
                 <div th:class="${'status-badge ' + (policy.status.name() == 'Active' ? 'status-active' : 'status-pending')}" 
                      th:text="${policy.status}">Active</div>
-                <h3 th:text="${policy.policyType.name}" style="margin-bottom: 0.5rem;">Life Insurance Premium</h3>
-                <p th:text="${'Policy #: ' + policy.id}" style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Policy #: POL-12345</p>
+                <h3 th:text="${policy.name}" style="margin-bottom: 0.5rem;">Policy Name</h3>
+                <p th:text="${'Policy #: ' + policy.id}" style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.5rem;">Policy #: POL-12345</p>
+                <p th:if="${policy.startDate != null}" th:text="${'Coverage: ' + policy.startDate + ' to ' + policy.endDate}" style="color: var(--text-dim); font-size: 0.75rem; margin-bottom: 1.5rem;">Jan 2026 - Jan 2027</p>
+                <div th:if="${policy.startDate == null}" style="margin-bottom: 1.5rem;"></div>
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
                     <div>
@@ -31,8 +33,8 @@
             </div>
 
             <div class="policy-card" th:if="${#lists.isEmpty(policies)}" style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
-
-                <a th:href="@{/}" class="btn btn-primary" style="margin-top: 1rem; padding: 0.75rem 2rem; font-size: 0.9rem;">Explore Plans</a>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">No policies found.</p>
+                <a sec:authorize="hasRole('Customer')" th:href="@{/policies/browse}" class="btn btn-primary" style="margin-top: 1rem; padding: 0.75rem 2rem; font-size: 0.9rem;">Explore Plans</a>
             </div>
         </div>
     </div>

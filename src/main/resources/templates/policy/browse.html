@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: header-files}">
+</head>
+<link rel="stylesheet" th:href="@{/css/policy.css}">
+
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div style="padding: 8rem 5% 4rem;">
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <h1>Browse Our Insurance <span>Plans</span></h1>
+            <p style="color: var(--text-muted); margin-top: 1rem;">Choose the best coverage tailored for your needs.</p>
+        </div>
+        
+        <div class="policy-grid">
+            <div class="policy-card" th:each="policy : ${policies}">
+                <div class="status-badge status-active">Generic Plan</div>
+                <h3 th:text="${policy.name}" style="margin-bottom: 0.5rem;">Plan Name</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;" th:text="${'Premium: $' + policy.premiumAmount + ' / ' + policy.paymentFrequency}">Premium details...</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;" th:text="${'Coverage: $' + policy.coverageAmount}">Coverage amount...</p>
+                
+                <div style="display: flex; justify-content: center; margin-top: auto;">
+                    <a th:href="@{/policies/{id}/enroll(id=${policy.id})}" class="btn btn-primary" style="padding: 0.6rem 2rem;">Enroll Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:fragment="footer">
+        <div class="logo" style="justify-content: center; margin-bottom: 1.5rem;">Shield<span>Guard</span> Assurance</div>
+        <p class="footer-text">&copy; 2026 ShieldGuard Assurance. All rights reserved. Built for security & reliability.</p>
+    </footer>
+</body>
+
+</html>

@@ -6,10 +6,10 @@ import com.example.icsm.service.PolicyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import java.security.Principal;
+import com.example.icsm.model.User;
+import com.example.icsm.repository.UserRepository;
 
 @Controller
 @RequestMapping("/claims")
@@ -18,25 +18,37 @@ public class ClaimController {
 
     private final ClaimService claimService;
     private final PolicyService policyService;
+    private final UserRepository userRepository;
 
     @GetMapping
-    public String listClaims(Model model) {
-        model.addAttribute("claims", claimService.getClaimsByCustomer(1L));
-        return "claim/list";
+    public String listClaims(Model model, Principal principal) {
+        if (principal == null) return "redirect:/login";
+        User user = userRepository.findByEmail(principal.getName()).orElseThrow();
+        
+        if (user.getRole() == com.example.icsm.model.enums.UserRole.Agent) {
+            model.addAttribute("claims", claimService.getAllClaims()); // Agents review all
+            return "claim/review";
+        } else {
+            model.addAttribute("claims", claimService.getClaimsByCustomer(user.getId()));
+            return "claim/list";
+        }
     }
 
     @GetMapping("/file")
-    public String showFileClaimForm(Model model) {
-        model.addAttribute("policies", policyService.getPoliciesByCustomer(1L));
+    public String showFileClaimForm(Model model, Principal principal) {
+        if (principal == null) return "redirect:/login";
+        User user = userRepository.findByEmail(principal.getName()).orElseThrow();
+        model.addAttribute("policies", policyService.getPoliciesByCustomer(user.getId()));
         model.addAttribute("claim", new Claim());
         return "claim/form";
     }
 
     @PostMapping("/file")
-    public String fileClaim(Claim claim) {
-        // Set hardcoded customer for demo
-        // In real app, this comes from SecurityContext
-        claim.setCustomer(policyService.getPolicyById(claim.getPolicy().getId()).get().getCustomer());
+    public String fileClaim(Claim claim, Principal principal) {
+        if (principal == null) return "redirect:/login";
+        User user = userRepository.findByEmail(principal.getName()).orElseThrow();
+        
+        claim.setCustomer(user);
         claim.setStatus(com.example.icsm.model.enums.ClaimStatus.Pending);
         claimService.saveClaim(claim);
         return "redirect:/claims";
@@ -62,6 +74,22 @@ public class ClaimController {
     @PostMapping("/{id}/delete")
     public String deleteClaim(@PathVariable Long id) {
         claimService.deleteClaim(id);
+        return "redirect:/claims";
+    }
+
+    @PostMapping("/{id}/approve")
+    public String approveClaim(@PathVariable Long id) {
+        Claim claim = claimService.getClaimById(id).orElseThrow();
+        claim.setStatus(com.example.icsm.model.enums.ClaimStatus.Settled);
+        claimService.saveClaim(claim);
+        return "redirect:/claims";
+    }
+
+    @PostMapping("/{id}/reject")
+    public String rejectClaim(@PathVariable Long id) {
+        Claim claim = claimService.getClaimById(id).orElseThrow();
+        claim.setStatus(com.example.icsm.model.enums.ClaimStatus.Rejected);
+        claimService.saveClaim(claim);
         return "redirect:/claims";
     }
 }

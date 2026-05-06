@@ -8,6 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.security.Principal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+import com.example.icsm.model.User;
 
 @Controller
 @RequestMapping("/policies")
@@ -19,10 +24,72 @@ public class PolicyController {
     private final UserRepository userRepository;
 
     @GetMapping
-    public String listPolicies(Model model) {
-        // Hardcoded userId 1L
-        model.addAttribute("policies", policyService.getPoliciesByCustomer(1L));
+    public String listPolicies(Model model, Principal principal) {
+        if (principal == null) return "redirect:/login";
+        
+        // One-time cleanup for ID 2 as requested
+        policyService.getPolicyById(2L).ifPresent(p -> policyService.deletePolicy(2L));
+        
+        User user = userRepository.findByEmail(principal.getName()).orElseThrow();
+        
+        if (user.getRole() == com.example.icsm.model.enums.UserRole.Agent) {
+            // Only show "Generic Plans" (templates) for the agent
+            List<Policy> myTemplates = policyService.getPoliciesByAgent(user.getId()).stream()
+                    .filter(p -> p.getCustomer() != null && p.getCustomer().getId().equals(user.getId()))
+                    .collect(Collectors.toList());
+            model.addAttribute("policies", myTemplates);
+            model.addAttribute("isAgent", true);
+        } else {
+            model.addAttribute("policies", policyService.getPoliciesByCustomer(user.getId()));
+            model.addAttribute("isAgent", false);
+        }
         return "policy/list";
+    }
+
+    @GetMapping("/browse")
+    public String browsePolicies(Model model) {
+        // Only show "Generic Plans" where customer == agent (our template logic)
+        List<Policy> genericPlans = policyService.getAllPolicies().stream()
+                .filter(p -> p.getCustomer() != null && p.getAgent() != null && 
+                            p.getCustomer().getId().equals(p.getAgent().getId()))
+                .collect(java.util.stream.Collectors.toList());
+                
+        model.addAttribute("policies", genericPlans);
+        return "policy/browse";
+    }
+
+    @GetMapping("/{id}/enroll")
+    public String showEnrollmentForm(@PathVariable Long id, Model model) {
+        Policy template = policyService.getPolicyById(id).orElseThrow();
+        model.addAttribute("policy", template);
+        return "policy/enroll";
+    }
+
+    @PostMapping("/{id}/purchase")
+    public String purchasePolicy(@PathVariable Long id, 
+                               @RequestParam LocalDate startDate, 
+                               @RequestParam LocalDate endDate, 
+                               Principal principal) {
+        if (principal == null) return "redirect:/login";
+        User customer = userRepository.findByEmail(principal.getName()).orElseThrow();
+        Policy template = policyService.getPolicyById(id).orElseThrow();
+        
+        // Create a new personalized policy for the customer
+        Policy personalPolicy = Policy.builder()
+                .name(template.getName())
+                .agent(template.getAgent())
+                .customer(customer)
+                .policyType(template.getPolicyType())
+                .coverageAmount(template.getCoverageAmount())
+                .premiumAmount(template.getPremiumAmount())
+                .paymentFrequency(template.getPaymentFrequency())
+                .status(com.example.icsm.model.enums.PolicyStatus.Active)
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
+        
+        policyService.savePolicy(personalPolicy);
+        return "redirect:/policies";
     }
 
     @GetMapping("/add")
@@ -33,11 +100,34 @@ public class PolicyController {
     }
 
     @PostMapping("/add")
-    public String addPolicy(Policy policy) {
-        policy.setCustomer(userRepository.findById(1L).orElseThrow());
-        policy.setStatus(com.example.icsm.model.enums.PolicyStatus.Pending);
-        policyService.savePolicy(policy);
-        return "redirect:/policies";
+    public String addPolicy(@ModelAttribute Policy policy, Principal principal, Model model) {
+        if (principal == null) return "redirect:/login";
+        
+        try {
+            User agent = userRepository.findByEmail(principal.getName())
+                    .orElseThrow(() -> new RuntimeException("Logged in agent not found"));
+            
+            if (agent.getRole() != com.example.icsm.model.enums.UserRole.Agent) {
+                return "redirect:/policies?error=Unauthorized";
+            }
+            
+            policy.setAgent(agent);
+            policy.setCustomer(agent); // Temporary owner
+            policy.setStatus(com.example.icsm.model.enums.PolicyStatus.Pending);
+            
+            // Basic validation check
+            if (policy.getName() == null || policy.getName().isEmpty()) {
+                throw new RuntimeException("Policy name is required");
+            }
+            
+            policyService.savePolicy(policy);
+            return "redirect:/policies";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error creating policy: " + e.getMessage());
+            model.addAttribute("policy", policy);
+            model.addAttribute("policyTypes", policyService.getAllPolicyTypes());
+            return "policy/form";
+        }
     }
 
     @PostMapping("/{id}/edit")

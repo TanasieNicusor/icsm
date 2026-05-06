@@ -24,6 +24,9 @@ public class Policy {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
@@ -33,7 +36,7 @@ public class Policy {
     private User agent;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "policy_type_id", nullable = false)
+    @JoinColumn(name = "policy_type_id", nullable = true)
     private PolicyType policyType;
 
     @Column(name = "coverage_amount", nullable = false)
@@ -50,10 +53,10 @@ public class Policy {
     @Column(nullable = false)
     private PolicyStatus status;
 
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date", nullable = true)
     private LocalDate startDate;
 
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "end_date", nullable = true)
     private LocalDate endDate;
 
     @Column(name = "next_payment_date")

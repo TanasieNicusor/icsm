@@ -16,8 +16,18 @@
         <div class="logo"><a th:href="@{/}" style="text-decoration: none; color: inherit;">Shield<span>Guard</span></a></div>
         <div class="nav-links">
             <a th:href="@{/}">Dashboard</a>
-            <a th:href="@{/policies}">My Policies</a>
-            <a th:href="@{/claims}">Claims</a>
+            
+            <!-- Always visible -->
+            <a th:href="@{/policies/browse}">Browse Policies</a>
+            
+            <!-- Customer Links -->
+            <a sec:authorize="hasRole('Customer')" th:href="@{/policies}">My Policies</a>
+            <a sec:authorize="hasRole('Customer')" th:href="@{/claims/file}">Make Claims</a>
+            
+            <!-- Agent Links -->
+            <a sec:authorize="hasRole('Agent')" th:href="@{/policies}">My Policies</a>
+            <a sec:authorize="hasRole('Agent')" th:href="@{/claims}">Review Claims</a>
+            
             <a th:href="@{/support}">Support</a>
         </div>
         <div class="nav-right">

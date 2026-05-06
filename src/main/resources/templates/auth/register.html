@@ -143,10 +143,54 @@
             font-size: 0.875rem;
             text-align: center;
         }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-link {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-link:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="logo-container">
+            <a href="/" class="logo-link">
+                <div class="logo-icon">🛡️</div>
+                <span class="logo-text">ShieldGuard</span>
+            </a>
+        </div>
         <div class="header">
             <h1>Create Account</h1>
             <p>Join ShieldGuard Insurance Management</p>

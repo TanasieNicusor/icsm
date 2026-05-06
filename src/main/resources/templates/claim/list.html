@@ -10,8 +10,8 @@
 
     <div style="padding: 8rem 5% 4rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h1>My <span>Claims</span></h1>
-            <a th:href="@{/claims/file}" class="btn btn-primary">File New Claim</a>
+            <h1 th:text="${isAgent ? 'Review Claims' : 'My Claims'}">My <span>Claims</span></h1>
+            <a sec:authorize="hasRole('Customer')" th:href="@{/claims/file}" class="btn btn-primary">File New Claim</a>
         </div>
 
         <div class="policy-grid">
