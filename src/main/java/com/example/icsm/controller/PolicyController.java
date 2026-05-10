@@ -22,6 +22,7 @@ public class PolicyController {
     private final PolicyService policyService;
     private final DocumentService documentService;
     private final UserRepository userRepository;
+    private final com.example.icsm.service.NotificationService notificationService;
 
     @GetMapping
     public String listPolicies(Model model, Principal principal) {
@@ -29,7 +30,7 @@ public class PolicyController {
         
         User user = userRepository.findByEmail(principal.getName()).orElseThrow();
         
-        if (user.getRole() == com.example.icsm.model.enums.UserRole.Agent) {
+        if (user.getRole() != null && user.getRole() == com.example.icsm.model.enums.UserRole.Agent) {
             // Only show "Generic Plans" (templates) for the agent
             List<Policy> myTemplates = policyService.getPoliciesByAgent(user.getId()).stream()
                     .filter(p -> p.getCustomer() != null && p.getCustomer().getId().equals(user.getId()))
@@ -86,6 +87,19 @@ public class PolicyController {
                 .build();
         
         policyService.savePolicy(personalPolicy);
+
+        // Notification for Customer
+        notificationService.createNotification(customer, null, "Policy Enrolled", 
+            "You have successfully enrolled in the " + personalPolicy.getName() + " policy.", 
+            com.example.icsm.model.enums.NotificationType.system);
+
+        // Notification for Agent (template owner)
+        if (personalPolicy.getAgent() != null) {
+            notificationService.createNotification(personalPolicy.getAgent(), customer, "New Policy Enrollment", 
+                "A customer (" + customer.getFullName() + ") has enrolled in your " + personalPolicy.getName() + " policy template.", 
+                com.example.icsm.model.enums.NotificationType.system);
+        }
+
         return "redirect:/policies";
     }
 
@@ -104,7 +118,7 @@ public class PolicyController {
             User agent = userRepository.findByEmail(principal.getName())
                     .orElseThrow(() -> new RuntimeException("Logged in agent not found"));
             
-            if (agent.getRole() != com.example.icsm.model.enums.UserRole.Agent) {
+            if (agent.getRole() == null || agent.getRole() != com.example.icsm.model.enums.UserRole.Agent) {
                 return "redirect:/policies?error=Unauthorized";
             }
             

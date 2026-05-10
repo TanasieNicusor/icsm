@@ -30,21 +30,21 @@
                     <tr th:each="claim : ${claims}" style="border-top: 1px solid var(--glass-border);">
                         <td style="padding: 1.25rem 1.5rem;" th:text="${'#' + claim.id}">#1</td>
                         <td style="padding: 1.25rem 1.5rem;">
-                            <div th:text="${claim.customer.fullName}" style="font-weight: 600;">John Doe</div>
-                            <div th:text="${claim.customer.email}" style="font-size: 0.75rem; color: var(--text-muted);">john@example.com</div>
+                            <div th:text="${claim.customer?.fullName ?: 'Unknown User'}" style="font-weight: 600;">John Doe</div>
+                            <div th:text="${claim.customer?.email ?: 'no-email'}" style="font-size: 0.75rem; color: var(--text-muted);">john@example.com</div>
                         </td>
-                        <td style="padding: 1.25rem 1.5rem;" th:text="${claim.policy.policyType.name}">Health Plan</td>
-                        <td style="padding: 1.25rem 1.5rem; font-weight: 700;" th:text="${'$' + claim.claim_amount}">$1,200</td>
+                        <td style="padding: 1.25rem 1.5rem;" th:text="${claim.policy?.policyType?.name ?: 'N/A'}">Health Plan</td>
+                        <td style="padding: 1.25rem 1.5rem; font-weight: 700;" th:text="${'$' + (claim.claim_amount ?: '0.00')}">$1,200</td>
                         <td style="padding: 1.25rem 1.5rem;">
                             <span th:class="${'status-badge ' + (claim.status.name() == 'Settled' ? 'status-active' : (claim.status.name() == 'Rejected' ? 'status-rejected' : 'status-pending'))}"
                                   th:text="${claim.status}">Pending</span>
                         </td>
                         <td style="padding: 1.25rem 1.5rem;">
                             <div style="display: flex; gap: 0.5rem;" th:if="${claim.status.name() == 'Pending' || claim.status.name() == 'Under_Review'}">
-                                <form th:action="@{/claims/{id}/approve(id=${claim.id})}" method="post">
+                                <form th:action="@{/claim/{id}/approve(id=${claim.id})}" method="post">
                                     <button type="submit" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: #22c55e;">Approve</button>
                                 </form>
-                                <form th:action="@{/claims/{id}/reject(id=${claim.id})}" method="post">
+                                <form th:action="@{/claim/{id}/reject(id=${claim.id})}" method="post">
                                     <button type="submit" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; color: #ef4444; border-color: #ef4444;">Reject</button>
                                 </form>
                             </div>
