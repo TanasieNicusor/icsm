@@ -22,11 +22,11 @@
             
             <!-- Customer Links -->
             <a sec:authorize="hasRole('Customer')" th:href="@{/policies}">My Policies</a>
-            <a sec:authorize="hasRole('Customer')" th:href="@{/claims/file}">Make Claims</a>
+            <a sec:authorize="hasRole('Customer')" th:href="@{/claim/file}">Make Claims</a>
             
             <!-- Agent Links -->
             <a sec:authorize="hasRole('Agent')" th:href="@{/policies}">My Policies</a>
-            <a sec:authorize="hasRole('Agent')" th:href="@{/claims}">Review Claims</a>
+            <a sec:authorize="hasRole('Agent')" th:href="@{/claim}">Review Claims</a>
             
             <a th:href="@{/support}">Support</a>
         </div>

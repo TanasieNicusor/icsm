@@ -73,5 +73,7 @@
 }
 
 @media (max-width: 992px) {
-    .detail-card { grid-template-columns: 1fr; }
+    .detail-card {
+        grid-template-columns: 1fr;
+    }
 }

@@ -11,12 +11,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class GlobalControllerAdvice {
 
     private final NotificationService notificationService;
+    private final com.example.icsm.repository.UserRepository userRepository;
 
     @ModelAttribute
-    public void addGlobalAttributes(Model model) {
-        // Hardcoded userId for now since we don't have security yet
-        Long userId = 1L;
-        model.addAttribute("notifications", notificationService.getRecentNotifications(userId));
-        model.addAttribute("unreadCount", notificationService.getUnreadCount(userId));
+    public void addGlobalAttributes(org.springframework.ui.Model model, java.security.Principal principal) {
+        if (principal != null) {
+            userRepository.findByEmail(principal.getName()).ifPresent(user -> {
+                model.addAttribute("unreadCount", notificationService.getUnreadCount(user.getId()));
+            });
+        } else {
+            model.addAttribute("unreadCount", 0);
+        }
     }
 }
