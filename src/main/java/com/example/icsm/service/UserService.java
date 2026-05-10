@@ -26,4 +26,36 @@ public class UserService {
     public boolean existsByEmail(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public void updateUserProfile(String email, User updatedUser) {
+        User existingUser = findByEmail(email);
+        existingUser.setFullName(updatedUser.getFullName());
+        existingUser.setPhone(updatedUser.getPhone());
+        existingUser.setAddress(updatedUser.getAddress());
+        userRepository.save(existingUser);
+    }
+
+    public java.util.List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public void changeUserRole(Long userId, com.example.icsm.model.enums.UserRole newRole) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setRole(newRole);
+        userRepository.save(user);
+    }
+
+    public void changeUserStatus(Long userId, UserStatus newStatus) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setStatus(newStatus);
+        userRepository.save(user);
+    }
+
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
 }

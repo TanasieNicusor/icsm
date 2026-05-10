@@ -1,5 +1,7 @@
 package com.example.icsm.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +33,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") User user, Model model) {
+    public String registerUser(@Valid @ModelAttribute("user") User user, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("roles", UserRole.values());
+            return "auth/register";
+        }
+
         if (userService.existsByEmail(user.getEmail())) {
             model.addAttribute("error", "Email already exists");
             model.addAttribute("roles", UserRole.values());

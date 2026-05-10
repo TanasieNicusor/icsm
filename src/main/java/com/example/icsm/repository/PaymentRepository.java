@@ -9,4 +9,7 @@ import java.util.List;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findByInvoiceId(Long invoiceId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT SUM(p.amount) FROM Payment p WHERE p.status = 'success'")
+    java.math.BigDecimal sumSuccessfulPayments();
 }
