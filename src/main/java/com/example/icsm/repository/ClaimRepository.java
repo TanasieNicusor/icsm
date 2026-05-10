@@ -10,4 +10,5 @@ import java.util.List;
 public interface ClaimRepository extends JpaRepository<Claim, Long> {
     List<Claim> findByCustomerId(Long customerId);
     List<Claim> findByPolicyId(Long policyId);
+    long countByStatus(com.example.icsm.model.enums.ClaimStatus status);
 }

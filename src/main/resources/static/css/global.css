@@ -23,6 +23,7 @@ body {
     color: var(--text-main);
     overflow-x: hidden;
     line-height: 1.6;
+    padding-top: 80px; /* space for fixed navbar */
 }
 
 /* Navbar */
@@ -233,3 +234,5 @@ footer {
 @media (max-width: 768px) {
     .nav-links { display: none; }
 }
+/* Ensure admin pages have top spacing from fixed navbar */
+.dashboard-container, .admin-container { padding-top: 80px; }

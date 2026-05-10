@@ -10,4 +10,5 @@ import java.util.List;
 public interface PolicyRepository extends JpaRepository<Policy, Long> {
     List<Policy> findByCustomerId(Long customerId);
     List<Policy> findByAgentId(Long agentId);
+    long countByStatus(com.example.icsm.model.enums.PolicyStatus status);
 }
