@@ -9,6 +9,7 @@ import jakarta.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,22 @@ public class SystemConfigService {
         return systemConfigRepository.findById(key)
                 .map(SystemConfig::getConfigValue)
                 .orElse(null);
+    }
+
+    private Optional<String> getConfigValueOptional(String key) {
+        return systemConfigRepository.findById(key).map(SystemConfig::getConfigValue);
+    }
+
+    public int getGracePeriodDays() {
+        return getConfigValueOptional("GRACE_PERIOD_DAYS")
+                .map(Integer::parseInt)
+                .orElse(15);
+    }
+
+    public java.math.BigDecimal getLateFeeAmount() {
+        return getConfigValueOptional("LATE_FEE_AMOUNT")
+                .map(java.math.BigDecimal::new)
+                .orElse(new java.math.BigDecimal("25.00"));
     }
 
     public void saveConfig(String key, String value) {

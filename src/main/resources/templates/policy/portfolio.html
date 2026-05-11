@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: header-files}">
+</head>
+<link rel="stylesheet" th:href="@{/css/policy.css}">
+
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div style="padding: 8rem 5% 4rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4rem;">
+            <div>
+                <h1>My <span>Portfolio</span></h1>
+                <p style="color: var(--text-muted); margin-top: 0.5rem;">Manage the insurance plans you offer to clients.</p>
+            </div>
+            <a th:href="@{/policies/add}" class="btn btn-primary" style="padding: 0.8rem 2rem;">+ Post New Policy</a>
+        </div>
+        
+        <div class="policy-grid">
+            <div class="policy-card" th:each="policy : ${policies}">
+                <div class="status-badge status-active">Public Offering</div>
+                <h3 th:text="${policy.name}" style="margin-bottom: 0.5rem;">Plan Name</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;" th:text="${'Premium: $' + policy.premiumAmount + ' / ' + policy.paymentFrequency}">Premium details...</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;" th:text="${'Coverage: $' + policy.coverageAmount}">Coverage amount...</p>
+                
+                <div style="display: flex; gap: 0.5rem; margin-top: auto;">
+                    <a th:href="@{/policies/{id}(id=${policy.id})}" class="btn btn-outline" style="flex: 2; text-align: center; padding: 0.6rem;">Details & Clients</a>
+                    <a th:href="@{/policies/{id}/edit(id=${policy.id})}" class="btn btn-outline" style="padding: 0.6rem 0.8rem;">Edit</a>
+                    <form th:action="@{/policies/{id}/delete(id=${policy.id})}" method="post" style="display: inline;" onsubmit="return confirm('Delete this policy template? It will be removed from Browse Policies.')">
+                        <button type="submit" class="btn btn-outline" style="padding: 0.6rem 0.8rem; color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(policies)}" style="text-align: center; padding: 4rem; background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px dashed var(--glass-border);">
+            <p style="color: var(--text-muted);">You haven't posted any policies yet. Click the button above to start your portfolio.</p>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: header-files}">
+</head>
+<link rel="stylesheet" th:href="@{/css/policy.css}">
+
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div style="padding: 8rem 5% 4rem;">
+        <div style="max-width: 800px; margin: 0 auto;">
+            
+            <a th:href="@{/policies/{id}(id=${policy.id})}" style="color: var(--accent); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;">
+                ← Back to Policy Details
+            </a>
+
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h1 style="margin-bottom: 0.5rem;">Payment Schedule</h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem;">
+                    For <span th:text="${policy.policyType?.name ?: 'Unknown Plan'}" style="color: var(--text);">Life Insurance</span> 
+                    (<span th:text="${policy.paymentFrequency}" style="text-transform: capitalize;">Monthly</span>)
+                </p>
+            </div>
+
+            <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem;">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--glass-border); margin-bottom: 1rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">
+                    <div>Payment #</div>
+                    <div>Due Date</div>
+                    <div style="text-align: right;">Expected Amount</div>
+                </div>
+
+                <div th:each="date, iterStat : ${scheduleDates}" 
+                     style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.02); transition: var(--transition);">
+                    
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span th:text="${iterStat.count}" style="background: rgba(99, 102, 241, 0.1); color: #818cf8; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem; font-weight: bold;">1</span>
+                    </div>
+                    
+                    <div th:text="${#temporals.format(date, 'MMM dd, yyyy')}" style="font-weight: 500;">
+                        Oct 15, 2026
+                    </div>
+                    
+                    <div th:text="${'$' + policy.premiumAmount}" style="text-align: right; color: #10b981; font-weight: bold;">
+                        $150.00
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(scheduleDates)}" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                    No future payments scheduled.
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(59, 130, 246, 0.1); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                        <span style="font-size: 1.5rem;">ℹ️</span>
+                        <div>
+                            <h4 style="color: #60a5fa; margin-bottom: 0.5rem; font-size: 0.95rem;">Automated Invoicing</h4>
+                            <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">
+                                The system will automatically generate an invoice on these dates. You will have a grace period of 15 days to pay the invoice before a late fee is applied. If an invoice remains unpaid for 60 days past the due date, this policy will be automatically suspended.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+
+</html>

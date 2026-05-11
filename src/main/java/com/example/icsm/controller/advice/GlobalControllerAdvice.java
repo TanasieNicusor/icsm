@@ -18,9 +18,11 @@ public class GlobalControllerAdvice {
         if (principal != null) {
             userRepository.findByEmail(principal.getName()).ifPresent(user -> {
                 model.addAttribute("unreadCount", notificationService.getUnreadCount(user.getId()));
+                model.addAttribute("userRole", user.getRole() != null ? user.getRole().name() : null);
             });
         } else {
             model.addAttribute("unreadCount", 0);
+            model.addAttribute("userRole", null);
         }
     }
 }

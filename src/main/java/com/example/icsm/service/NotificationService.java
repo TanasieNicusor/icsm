@@ -22,15 +22,25 @@ public class NotificationService {
     }
 
     public void createNotification(com.example.icsm.model.User user, com.example.icsm.model.User sender, String title, String message, com.example.icsm.model.enums.NotificationType type) {
-        Notification notification = Notification.builder()
-                .user(user)
-                .sender(sender)
-                .title(title)
-                .message(message)
-                .type(type)
-                .isRead(false)
-                .build();
-        notificationRepository.save(notification);
+        createNotification(user, sender, title, message, type, null);
+    }
+
+    public void createNotification(com.example.icsm.model.User user, com.example.icsm.model.User sender, String title, String message, com.example.icsm.model.enums.NotificationType type, Long relatedId) {
+        try {
+            Notification notification = Notification.builder()
+                    .user(user)
+                    .sender(sender)
+                    .title(title)
+                    .message(message)
+                    .type(type)
+                    .relatedId(relatedId)
+                    .isRead(false)
+                    .build();
+            notificationRepository.save(notification);
+        } catch (Exception e) {
+            // Log error but don't crash the whole policy purchase
+            System.err.println("Failed to create notification: " + e.getMessage());
+        }
     }
 
     public void deleteNotification(Long id) {

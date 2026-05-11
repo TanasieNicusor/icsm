@@ -12,4 +12,5 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     Optional<Invoice> findByInvoiceNumber(String invoiceNumber);
     List<Invoice> findByCustomerId(Long customerId);
     List<Invoice> findByPolicyId(Long policyId);
+    List<Invoice> findByStatusAndDueDateLessThanEqual(com.example.icsm.model.enums.InvoiceStatus status, java.time.LocalDate date);
 }
