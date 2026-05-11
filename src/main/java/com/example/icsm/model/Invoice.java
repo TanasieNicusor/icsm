@@ -46,6 +46,13 @@ public class Invoice {
     @Column(nullable = false)
     private InvoiceStatus status;
 
+    @Column(name = "late_fee_amount")
+    private BigDecimal lateFeeAmount;
+
+    @Column(name = "is_late_fee_applied")
+    @Builder.Default
+    private boolean isLateFeeApplied = false;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

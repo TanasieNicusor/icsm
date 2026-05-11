@@ -21,7 +21,7 @@
                 <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;" th:text="${'Premium: $' + policy.premiumAmount + ' / ' + policy.paymentFrequency}">Premium details...</p>
                 <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;" th:text="${'Coverage: $' + policy.coverageAmount}">Coverage amount...</p>
                 
-                <div style="display: flex; justify-content: center; margin-top: auto;">
+                <div th:if="${userRole == 'Customer'}" style="display: flex; justify-content: center; margin-top: auto;">
                     <a th:href="@{/policies/{id}/enroll(id=${policy.id})}" class="btn btn-primary" style="padding: 0.6rem 2rem;">Enroll Now</a>
                 </div>
             </div>

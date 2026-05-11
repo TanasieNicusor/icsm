@@ -58,4 +58,11 @@ public class UserService {
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
+
+    public void updateLastLogin(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            user.setLastLoginAt(java.time.LocalDateTime.now());
+            userRepository.save(user);
+        });
+    }
 }

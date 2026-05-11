@@ -13,46 +13,54 @@
 <body>
 
     <nav th:fragment="navbar">
-        <div class="logo"><a th:href="@{/}" style="text-decoration: none; color: inherit;">Shield<span>Guard</span></a></div>
+        <div class="logo"><a th:href="@{/}" style="text-decoration: none; color: inherit;">Shield<span>Guard</span></a>
+        </div>
         <div class="nav-links">
             <a th:href="@{/}">Dashboard</a>
-            
+
             <!-- Always visible -->
             <a th:href="@{/policies/browse}">Browse Policies</a>
-            
+
             <!-- Customer Links -->
             <a sec:authorize="hasRole('Customer')" th:href="@{/policies}">My Policies</a>
-            <a sec:authorize="hasRole('Customer')" th:href="@{/claim/file}">Make Claims</a>
-            
+            <a sec:authorize="hasRole('Customer')" th:href="@{/claim}">Make Claims</a>
+
             <!-- Agent Links -->
-            <a sec:authorize="hasRole('Agent')" th:href="@{/policies}">My Policies</a>
+            <a sec:authorize="hasRole('Agent')" th:href="@{/policies/portfolio}">My Portfolio</a>
             <a sec:authorize="hasRole('Agent')" th:href="@{/claim}">Review Claims</a>
-            
+
             <!-- Admin Links -->
             <a sec:authorize="hasRole('Admin')" th:href="@{/admin/dashboard}">Admin Dashboard</a>
             <a sec:authorize="hasRole('Admin')" th:href="@{/admin/users}">Manage Users</a>
             <a sec:authorize="hasRole('Admin')" th:href="@{/admin/settings}">Settings</a>
             <a sec:authorize="hasRole('Admin')" th:href="@{/admin/logs}">Audit Logs</a>
-            
+
             <a th:href="@{/support}">Support</a>
         </div>
         <div class="nav-right">
             <div th:replace="~{fragments/notifications :: dropdown}"></div>
-            
+
             <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center; gap: 1rem;">
-                <span style="font-size: 0.9rem; color: #94a3b8;">Hello, <a th:href="@{/profile}" th:text="${#authentication.name}" style="color: #6366f1; font-weight: 600; text-decoration: none;">User</a></span>
-                <a th:href="@{/logout}" class="btn btn-outline" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Logout</a>
+                <span style="font-size: 0.9rem; color: #94a3b8;">Hello, <a th:href="@{/profile}"
+                        th:text="${#authentication.name}"
+                        style="color: #6366f1; font-weight: 600; text-decoration: none;">User</a></span>
+                <a th:href="@{/logout}" class="btn btn-outline"
+                    style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Logout</a>
             </div>
             <div sec:authorize="isAnonymous()" style="display: flex; gap: 0.5rem;">
-                <a th:href="@{/login}" class="btn btn-outline" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Login</a>
-                <a th:href="@{/register}" class="btn btn-primary" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Register</a>
+                <a th:href="@{/login}" class="btn btn-outline"
+                    style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Login</a>
+                <a th:href="@{/register}" class="btn btn-primary"
+                    style="padding: 0.6rem 1.5rem; font-size: 0.85rem;">Register</a>
             </div>
         </div>
     </nav>
 
     <footer th:fragment="footer">
-        <div class="logo" style="justify-content: center; margin-bottom: 1.5rem;">Shield<span>Guard</span> Assurance</div>
-        <p class="footer-text">&copy; 2026 ShieldGuard Assurance. All rights reserved. Built for security & reliability.</p>
+        <div class="logo" style="justify-content: center; margin-bottom: 1.5rem;">Shield<span>Guard</span> Assurance
+        </div>
+        <p class="footer-text">&copy; 2026 ShieldGuard Assurance. All rights reserved. Built for security & reliability.
+        </p>
     </footer>
 
 </body>

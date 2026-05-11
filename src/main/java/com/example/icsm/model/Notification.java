@@ -28,6 +28,9 @@ public class Notification {
     @JoinColumn(name = "sender_id")
     private User sender;
 
+    @Column(name = "related_id")
+    private Long relatedId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationType type;

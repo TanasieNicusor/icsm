@@ -9,6 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import com.example.icsm.model.User;
+import java.util.List;
+import java.util.stream.Collectors;
+import com.example.icsm.model.Policy;
 import com.example.icsm.repository.UserRepository;
 
 @Controller
@@ -44,7 +47,11 @@ public class ClaimController {
         if (principal == null)
             return "redirect:/login";
         User user = userRepository.findByEmail(principal.getName()).orElseThrow();
-        model.addAttribute("policies", policyService.getPoliciesByCustomer(user.getId()));
+        // Only active policies can be claimed
+        List<Policy> activePolicies = policyService.getPoliciesByCustomer(user.getId()).stream()
+                .filter(p -> p.getStatus() == com.example.icsm.model.enums.PolicyStatus.Active)
+                .collect(Collectors.toList());
+        model.addAttribute("policies", activePolicies);
         model.addAttribute("claim", new Claim());
         return "claim/form";
     }
@@ -55,14 +62,31 @@ public class ClaimController {
             return "redirect:/login";
         User user = userRepository.findByEmail(principal.getName()).orElseThrow();
 
+        // Fetch the full policy from the database since the form only binds the ID
+        Policy policy = policyService.getPolicyById(claim.getPolicy().getId()).orElse(null);
+        
+        // Ensure the selected policy exists and is active before saving the claim
+        if (policy == null || policy.getStatus() != com.example.icsm.model.enums.PolicyStatus.Active) {
+            // Redirect with error if policy is not active or not found
+            return "redirect:/claim?error=Policy not active";
+        }
+        
+        claim.setPolicy(policy);
         claim.setCustomer(user);
         claim.setStatus(com.example.icsm.model.enums.ClaimStatus.Pending);
         claimService.saveClaim(claim);
 
-        // Notification for Customer (No specific sender for system confirmation)
+        // Notification for Customer
         notificationService.createNotification(user, null, "Claim Filed", 
-            "Your claim for policy " + (claim.getPolicy() != null ? claim.getPolicy().getName() : "Unknown") + " has been received.", 
+            "Your claim for policy " + policy.getName() + " has been received and is pending review.", 
             com.example.icsm.model.enums.NotificationType.system);
+            
+        // Notification for Agent
+        if (policy.getAgent() != null) {
+            notificationService.createNotification(policy.getAgent(), null, "New Claim Filed", 
+                "Customer " + user.getFullName() + " has filed a new claim for policy " + policy.getName() + ".", 
+                com.example.icsm.model.enums.NotificationType.claim_update);
+        }
 
         return "redirect:/claim";
     }
@@ -71,7 +95,11 @@ public class ClaimController {
     public String showEditClaimForm(@PathVariable Long id, Model model) {
         Claim claim = claimService.getClaimById(id).orElseThrow();
         model.addAttribute("claim", claim);
-        model.addAttribute("policies", policyService.getPoliciesByCustomer(claim.getCustomer().getId()));
+        // Only active policies can be used for editing a claim
+        List<Policy> activePolicies = policyService.getPoliciesByCustomer(claim.getCustomer().getId()).stream()
+                .filter(p -> p.getStatus() == com.example.icsm.model.enums.PolicyStatus.Active)
+                .collect(Collectors.toList());
+        model.addAttribute("policies", activePolicies);
         return "claim/form";
     }
 

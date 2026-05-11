@@ -22,9 +22,7 @@
                     <label>Select Policy</label>
                     <select name="policy.id" class="form-control" required>
                         <option value="" disabled th:selected="${claim.policy == null}">Choose a policy</option>
-                        <option th:each="policy : ${policies}" th:value="${policy.id}"
-                            th:text="${(policy.policyType?.name ?: 'Unknown Type') + ' (#' + policy.id + ')'}"
-                            th:selected="${claim.policy != null && claim.policy.id == policy.id}">Policy Name</option>
+                        <option th:each="policy : ${policies}" th:value="${policy.id}" th:text="${policy.name}" th:selected="${claim.policy != null && claim.policy.id == policy.id}">Policy Name</option>
                     </select>
                 </div>
 

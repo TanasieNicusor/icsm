@@ -11,4 +11,8 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
     List<Policy> findByCustomerId(Long customerId);
     List<Policy> findByAgentId(Long agentId);
     long countByStatus(com.example.icsm.model.enums.PolicyStatus status);
+    List<Policy> findByStatusAndNextPaymentDateLessThanEqual(com.example.icsm.model.enums.PolicyStatus status, java.time.LocalDate date);
+    List<Policy> findByParentPolicyId(Long parentId);
+    List<Policy> findByAgentIdAndParentPolicyIsNull(Long agentId);
+    List<Policy> findByParentPolicyIsNullAndAgentIsNotNull();
 }

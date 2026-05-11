@@ -10,8 +10,7 @@
 
     <div style="padding: 8rem 5% 4rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h1 th:text="${isAgent ? 'All Insurance Policies' : 'My Insurance Policies'}">My Insurance <span>Policies</span></h1>
-            <a sec:authorize="hasRole('Agent')" th:href="@{/policies/add}" class="btn btn-primary">Create Policy</a>
+            <h1>My Insurance <span>Policies</span></h1>
         </div>
         
         <div class="policy-grid">

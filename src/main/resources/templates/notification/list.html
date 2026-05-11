@@ -41,7 +41,14 @@
                         </div>
                     </div>
 
-                    <div style="display: flex; gap: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <!-- Direct Action for Agent Approvals -->
+                        <form th:if="${notif.type.name() == 'enrollment_request'}" th:action="@{/policies/confirm-enrollment/{id}(id=${notif.relatedId})}" method="post">
+                            <button type="submit" class="btn btn-primary" style="padding: 0.4rem 1.2rem; font-size: 0.75rem; background: #10b981; border-color: #10b981; font-weight: 700; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);">
+                                ✓ Confirm Enrollment
+                            </button>
+                        </form>
+
                         <button th:if="${notif.sender != null}" class="btn btn-outline" 
                                 th:onclick="'toggleReply(' + ${notif.id} + ')'"
                                 style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">Reply</button>
@@ -94,6 +101,7 @@
         .type-badge.claim_confirmation { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
         .type-badge.policy_application { color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
         .type-badge.system { color: #818cf8; background: rgba(129, 140, 248, 0.1); }
+        .type-badge.enrollment_request { color: #10b981; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); }
     </style>
 
     <footer th:replace="~{fragments/layout :: footer}"></footer>

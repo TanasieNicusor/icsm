@@ -70,6 +70,10 @@ public class Policy {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_policy_id")
+    private Policy parentPolicy;
+
     @OneToMany(mappedBy = "policy", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<Claim> claims;
 
