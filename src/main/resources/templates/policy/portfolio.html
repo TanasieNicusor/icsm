@@ -9,16 +9,64 @@
     <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
     <div style="padding: 8rem 5% 4rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
             <div>
                 <h1>My <span>Portfolio</span></h1>
                 <p style="color: var(--text-muted); margin-top: 0.5rem;">Manage the insurance plans you offer to clients.</p>
             </div>
             <a th:href="@{/policies/add}" class="btn btn-primary" style="padding: 0.8rem 2rem;">+ Post New Policy</a>
         </div>
+
+        <!-- Search History -->
+        <div class="search-history" th:if="${history != null and !history.isEmpty()}">
+            <span style="color: var(--text-muted); font-size: 0.8rem; align-self: center;">Recent:</span>
+            <a th:each="query : ${history}" th:href="${query.searchUrl + '?keyword=' + (query.queryText ?: '')}" class="history-tag">
+                <i class="fas fa-history"></i>
+                <span th:text="${query.queryText ?: 'Empty Search'}">Search Query</span>
+            </a>
+        </div>
+
+        <!-- Search Bar & Filters -->
+        <form th:action="@{/policies/portfolio}" method="get" class="search-container">
+            <div class="search-main">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="keyword" th:value="${criteria.keyword}" placeholder="Search my portfolio...">
+                </div>
+                <button type="button" class="btn btn-outline" onclick="toggleFilters()" style="padding: 1rem 1.5rem;">
+                    <i class="fas fa-sliders-h"></i>
+                </button>
+                <button type="submit" class="btn btn-primary" style="padding: 1rem 2rem;">Search</button>
+            </div>
+
+            <div id="advanced-filters" class="advanced-filters" style="display: none;">
+                <div class="filter-group">
+                    <label>Coverage Range</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="number" name="minCoverage" th:value="${criteria.minCoverage}" placeholder="Min">
+                        <input type="number" name="maxCoverage" th:value="${criteria.maxCoverage}" placeholder="Max">
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label>Sort By</label>
+                    <select name="sortBy">
+                        <option value="id" th:selected="${criteria.sortBy == 'id'}">Policy #</option>
+                        <option value="name" th:selected="${criteria.sortBy == 'name'}">Name</option>
+                        <option value="coverageAmount" th:selected="${criteria.sortBy == 'coverageAmount'}">Coverage</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Direction</label>
+                    <select name="sortDir">
+                        <option value="desc" th:selected="${criteria.sortDir == 'desc'}">Descending</option>
+                        <option value="asc" th:selected="${criteria.sortDir == 'asc'}">Ascending</option>
+                    </select>
+                </div>
+            </div>
+        </form>
         
         <div class="policy-grid">
-            <div class="policy-card" th:each="policy : ${policies}">
+            <div class="policy-card" th:each="policy : ${policies}" th:onmouseover="'showPreview(' + ${policy.id} + ')'" th:onmouseout="'hidePreview()'">
                 <div class="status-badge status-active">Public Offering</div>
                 <h3 th:text="${policy.name}" style="margin-bottom: 0.5rem;">Plan Name</h3>
                 <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;" th:text="${'Premium: $' + policy.premiumAmount + ' / ' + policy.paymentFrequency}">Premium details...</p>
@@ -35,9 +83,88 @@
         </div>
 
         <div th:if="${#lists.isEmpty(policies)}" style="text-align: center; padding: 4rem; background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px dashed var(--glass-border);">
-            <p style="color: var(--text-muted);">You haven't posted any policies yet. Click the button above to start your portfolio.</p>
+            <p style="color: var(--text-muted);">No policies found matching your search.</p>
+            <a th:href="@{/policies/portfolio}" class="btn btn-outline">Clear Filters</a>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" th:if="${page.totalPages > 1}">
+            <a th:if="${page.hasPrevious()}" th:href="@{/policies/portfolio(page=${page.number - 1}, keyword=${criteria.keyword})}" class="page-link">&laquo;</a>
+            <span th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+                <a th:href="@{/policies/portfolio(page=${i}, keyword=${criteria.keyword})}" 
+                   th:class="${'page-link ' + (page.number == i ? 'active' : '')}" th:text="${i + 1}">1</a>
+            </span>
+            <a th:if="${page.hasNext()}" th:href="@{/policies/portfolio(page=${page.number + 1}, keyword=${criteria.keyword})}" class="page-link">&raquo;</a>
         </div>
     </div>
+
+    <!-- Quick Preview Panel -->
+    <div id="preview-panel" class="preview-panel">
+        <div class="preview-header">
+            <h3>Policy <span>Preview</span></h3>
+            <div class="preview-close" onclick="hidePreview()">&times;</div>
+        </div>
+        <div id="preview-content" class="preview-content">
+            <p style="color: var(--text-muted);">Hover over a policy to see details.</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleFilters() {
+            const filters = document.getElementById('advanced-filters');
+            filters.style.display = filters.style.display === 'none' ? 'grid' : 'none';
+        }
+
+        let previewTimeout;
+        function showPreview(id) {
+            clearTimeout(previewTimeout);
+            previewTimeout = setTimeout(() => {
+                const panel = document.getElementById('preview-panel');
+                const content = document.getElementById('preview-content');
+                panel.classList.add('active');
+                
+                fetch(`/api/policies/${id}/preview`)
+                    .then(res => res.json())
+                    .then(data => {
+                        content.innerHTML = `
+                            <div class="detail-item">
+                                <span class="detail-label">Policy Name</span>
+                                <span class="detail-value">${data.customerName}</span> <!-- Actually policy name in templates -->
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Type</span>
+                                <span class="detail-value">${data.typeName}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Coverage</span>
+                                <b style="font-size: 1.5rem; color: var(--accent);">$${data.coverage}</b>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Offered By</span>
+                                <span class="detail-value">You</span>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <a href="/policies/${id}" class="btn btn-primary" style="width: 100%; text-align: center;">Details & Clients</a>
+                            </div>
+                        `;
+                    })
+                    .catch(err => {
+                        content.innerHTML = '<p style="color: #ff4d4d;">Error loading preview.</p>';
+                    });
+            }, 500);
+        }
+
+        function hidePreview() {
+            clearTimeout(previewTimeout);
+        }
+
+        document.addEventListener('click', (e) => {
+            const panel = document.getElementById('preview-panel');
+            if (panel.classList.contains('active') && !panel.contains(e.target) && !e.target.closest('.policy-card')) {
+                panel.classList.remove('active');
+            }
+        });
+    </script>
 
     <footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>

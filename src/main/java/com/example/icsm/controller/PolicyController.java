@@ -26,9 +26,10 @@ public class PolicyController {
     private final UserRepository userRepository;
     private final com.example.icsm.service.NotificationService notificationService;
     private final com.example.icsm.repository.PolicyRepository policyRepository;
+    private final com.example.icsm.service.PolicySearchService policySearchService;
 
     @GetMapping
-    public String listPolicies(Model model, Principal principal) {
+    public String listPolicies(com.example.icsm.dto.SearchCriteria criteria, Model model, Principal principal, jakarta.servlet.http.HttpServletRequest request) {
         if (principal == null) return "redirect:/login";
         User user = userRepository.findByEmail(principal.getName()).orElseThrow();
         
@@ -36,28 +37,72 @@ public class PolicyController {
             return "redirect:/policies/portfolio";
         }
         
-        model.addAttribute("policies", policyService.getPoliciesByCustomer(user.getId()));
+        // Filter by current customer
+        org.springframework.data.domain.Page<Policy> policyPage = policySearchService.searchPolicies(criteria, user.getId(), null);
+
+        model.addAttribute("policies", policyPage.getContent());
+        model.addAttribute("page", policyPage);
+        model.addAttribute("criteria", criteria);
+        model.addAttribute("history", policySearchService.getSearchHistory(user));
+        
+        // Save history if searching
+        if (criteria.getKeyword() != null || criteria.getStatus() != null) {
+            policySearchService.saveSearchHistory(user, criteria, "/policies");
+        }
+        
         return "policy/list";
     }
 
     @GetMapping("/portfolio")
-    public String viewPortfolio(Model model, Principal principal) {
+    public String viewPortfolio(com.example.icsm.dto.SearchCriteria criteria, Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
         User user = userRepository.findByEmail(principal.getName()).orElseThrow();
         
         if (user.getRole() == null || user.getRole() != UserRole.Agent) return "redirect:/policies";
         
         // Show only the "Template" policies posted by this agent
-        List<Policy> myTemplates = policyRepository.findByAgentIdAndParentPolicyIsNull(user.getId());
-        model.addAttribute("policies", myTemplates);
+        // Use search service to filter by agent and isTemplate
+        criteria.setAgentId(user.getId());
+        org.springframework.data.domain.Page<Policy> policyPage = policySearchService.searchPolicies(criteria, null, true);
+        
+        model.addAttribute("policies", policyPage.getContent());
+        model.addAttribute("page", policyPage);
+        model.addAttribute("criteria", criteria);
+        model.addAttribute("history", policySearchService.getSearchHistory(user));
+        
+        // Save history if searching
+        if (criteria.getKeyword() != null || criteria.getStatus() != null) {
+            policySearchService.saveSearchHistory(user, criteria, "/policies/portfolio");
+        }
+        
         return "policy/portfolio";
     }
 
     @GetMapping("/browse")
-    public String browsePolicies(Model model) {
-        // Show all agent-posted templates (policies with no parent and an assigned agent)
-        List<Policy> templates = policyRepository.findByParentPolicyIsNullAndAgentIsNotNull();
+    public String browsePolicies(com.example.icsm.dto.SearchCriteria criteria, Model model, Principal principal) {
+        // Only show templates with an assigned agent
+        org.springframework.data.domain.Page<Policy> policyPage = policySearchService.searchPolicies(criteria, null, true);
+        
+        // Filter out templates with no agent (if any) - though spec could handle this too
+        List<Policy> templates = policyPage.getContent().stream()
+                .filter(p -> p.getAgent() != null)
+                .collect(Collectors.toList());
+        
         model.addAttribute("policies", templates);
+        model.addAttribute("page", policyPage);
+        model.addAttribute("criteria", criteria);
+        
+        if (principal != null) {
+            User user = userRepository.findByEmail(principal.getName()).orElse(null);
+            if (user != null) {
+                model.addAttribute("history", policySearchService.getSearchHistory(user));
+                // Save history if searching
+                if (criteria.getKeyword() != null || criteria.getStatus() != null) {
+                    policySearchService.saveSearchHistory(user, criteria, "/policies/browse");
+                }
+            }
+        }
+        
         return "policy/browse";
     }
 
