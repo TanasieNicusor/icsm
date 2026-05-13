@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/layout :: header-files}"></div>
+    <title>System Reports - ShieldGuard</title>
+    <style>
+        .reports-container {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .header-section {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-section h1 {
+            font-size: 2rem;
+            background: linear-gradient(to right, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .report-types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .report-type-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .report-type-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+        }
+
+        .report-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .btn-generate {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1.5rem;
+            background: #3b82f6;
+            color: white;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn-generate:hover {
+            background: #2563eb;
+        }
+
+        .recent-reports {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .report-table th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .report-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body class="dark-theme">
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <main class="reports-container">
+        <div class="header-section">
+            <h1>Business Intelligence Reports</h1>
+        </div>
+
+        <div class="report-types-grid">
+            <div class="report-type-card">
+                <span class="report-icon">📈</span>
+                <h3>Sales Report</h3>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 0.5rem;">Track policy sales and growth trends.</p>
+                <a th:href="@{/admin/reports/generate(type='SALES_REPORT')}" class="btn-generate" onclick="confirmGeneration()">Generate Now</a>
+            </div>
+
+            <div class="report-type-card">
+                <span class="report-icon">🛡️</span>
+                <h3>Claims Report</h3>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 0.5rem;">Analyze claim frequencies and costs.</p>
+                <a th:href="@{/admin/reports/generate(type='CLAIMS_REPORT')}" class="btn-generate" onclick="confirmGeneration()">Generate Now</a>
+            </div>
+
+            <div class="report-type-card">
+                <span class="report-icon">💰</span>
+                <h3>Revenue Report</h3>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 0.5rem;">Review income and financial performance.</p>
+                <a th:href="@{/admin/reports/generate(type='REVENUE_REPORT')}" class="btn-generate" onclick="confirmGeneration()">Generate Now</a>
+            </div>
+
+            <div class="report-type-card">
+                <span class="report-icon">👥</span>
+                <h3>Demographics Report</h3>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 0.5rem;">Understand your customer base.</p>
+                <a th:href="@{/admin/reports/generate(type='CUSTOMER_DEMOGRAPHICS_REPORT')}" class="btn-generate" onclick="confirmGeneration()">Generate Now</a>
+            </div>
+
+            <div class="report-type-card">
+                <span class="report-icon">🏆</span>
+                <h3>Agent Performance</h3>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 0.5rem;">Evaluate sales agent efficiency.</p>
+                <a th:href="@{/admin/reports/generate(type='AGENT_PERFORMANCE_REPORT')}" class="btn-generate" onclick="confirmGeneration()">Generate Now</a>
+            </div>
+        </div>
+
+        <div class="recent-reports">
+            <h2 style="color: #e2e8f0; margin-bottom: 1.5rem;">Recently Generated</h2>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Created At</th>
+                        <th>Parameters</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="report : ${reports}">
+                        <td th:text="${report.type}">SALES_REPORT</td>
+                        <td th:text="${report.createdAt != null ? #temporals.format(report.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">2024-05-13</td>
+                        <td th:text="${report.parameters}">None</td>
+                        <td>
+                            <a th:href="@{/admin/reports/{id}/export/pdf(id=${report.id != null ? report.id : 0})}" 
+                               style="color: #60a5fa; text-decoration: none; margin-right: 10px;" title="Export as PDF">
+                                <span style="font-size: 1.2rem;">📄</span> PDF
+                            </a>
+                            <a th:href="@{/admin/reports/{id}/export/csv(id=${report.id != null ? report.id : 0})}" 
+                               style="color: #34d399; text-decoration: none;" title="Export as CSV">
+                                <span style="font-size: 1.2rem;">📊</span> CSV
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(reports)}">
+                        <td colspan="4" style="text-align: center; padding: 3rem; color: #64748b;">No reports generated yet.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

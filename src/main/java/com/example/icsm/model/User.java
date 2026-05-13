@@ -36,6 +36,7 @@ public class User {
 
     @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "^(\\+?\\d{1,3}[- ]?)?\\d{10,12}$", message = "Invalid phone number format (e.g. +40722123456 or 0722123456)")
+    @Column(nullable = false, unique = true)
     private String phone;
 
     @NotBlank(message = "Password is required")

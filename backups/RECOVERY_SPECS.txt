@@ -1,0 +1,15 @@
+DISASTER RECOVERY SPECIFICATIONS (REQ-80)
+---------------------------------------
+System: ICSM (ShieldGuard)
+Last Updated: 2026-05-13
+
+RECOVERY POINT OBJECTIVE (RPO): 30 MINUTES
+- We save the database every 30 minutes.
+- Maximum data loss is limited to 30 minutes.
+
+RECOVERY TIME OBJECTIVE (RTO): 4 HOURS
+- Total restoration time is estimated at 2.5 hours.
+- System will be back online within 4 hours of a disaster.
+
+BACKUP LOCATION: This folder (backups/)
+PROCEDURE: See docs/DISASTER_RECOVERY_PLAN.md

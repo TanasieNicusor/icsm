@@ -24,7 +24,7 @@ public class PolicyType {
     @JoinColumn(name = "category_id", nullable = false)
     private PolicyCategory category;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(columnDefinition = "TEXT")
