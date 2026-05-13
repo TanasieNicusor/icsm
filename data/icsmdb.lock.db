@@ -1,0 +1,6 @@
+#FileLock
+#Wed May 13 19:14:05 EEST 2026
+server=192.168.56.1\:58670
+hostName=192.168.56.1
+method=file
+id=19e221de48fe7642d41d40afd3157bb1e4cc5ecf125

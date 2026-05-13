@@ -34,7 +34,7 @@ public class Claim {
     @JoinColumn(name = "agent_id")
     private User agent;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
     @Column(name = "claim_amount", nullable = false)
