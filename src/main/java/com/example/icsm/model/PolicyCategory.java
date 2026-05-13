@@ -1,5 +1,6 @@
 package com.example.icsm.model;
 
+import com.example.icsm.listener.EntityAuditListener;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "policy_categories")
+@EntityListeners(EntityAuditListener.class)
 @Getter
 @Setter
 @NoArgsConstructor

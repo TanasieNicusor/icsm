@@ -2,6 +2,7 @@ package com.example.icsm.model;
 
 import com.example.icsm.model.enums.PaymentFrequency;
 import com.example.icsm.model.enums.PolicyStatus;
+import com.example.icsm.listener.EntityAuditListener;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "policies")
+@EntityListeners(EntityAuditListener.class)
 @Getter
 @Setter
 @NoArgsConstructor

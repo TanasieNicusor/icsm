@@ -1,5 +1,6 @@
 package com.example.icsm.model;
 
+import com.example.icsm.listener.EntityAuditListener;
 import com.example.icsm.model.enums.UserRole;
 import com.example.icsm.model.enums.UserStatus;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
+@EntityListeners(EntityAuditListener.class)
 @Getter
 @Setter
 @NoArgsConstructor
