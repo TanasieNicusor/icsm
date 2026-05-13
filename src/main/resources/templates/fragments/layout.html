@@ -34,6 +34,7 @@
             <a sec:authorize="hasRole('Admin')" th:href="@{/admin/users}">Manage Users</a>
             <a sec:authorize="hasRole('Admin')" th:href="@{/admin/settings}">Settings</a>
             <a sec:authorize="hasRole('Admin')" th:href="@{/admin/logs}">Audit Logs</a>
+            <a sec:authorize="hasRole('Admin')" th:href="@{/admin/changelog}">System Logs</a>
 
             <a th:href="@{/support}">Support</a>
         </div>

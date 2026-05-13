@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <div th:replace="~{fragments/layout :: header-files}"></div>
+    <title>Change Log - Admin Console</title>
+    <link rel="stylesheet" th:href="@{/css/policy.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .changelog-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+        }
+        .log-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.75rem;
+            margin-top: 2rem;
+        }
+        .log-table th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .log-table tr {
+            background: var(--bg-card);
+            transition: var(--transition);
+        }
+        .log-table tr:hover {
+            transform: scale(1.01);
+            background: rgba(30, 41, 59, 0.8);
+        }
+        .log-table td {
+            padding: 1.25rem 1rem;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .log-table td:first-child {
+            border-left: 1px solid var(--border);
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+        .log-table td:last-child {
+            border-right: 1px solid var(--border);
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+        .action-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .action-create { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        .action-update { background: rgba(14, 165, 233, 0.1); color: #0ea5e9; }
+        .action-delete { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        .action-rollback { background: rgba(168, 85, 247, 0.1); color: #a855f7; }
+        
+        .value-diff {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .old-value { color: #ef4444; text-decoration: line-through; font-size: 0.85rem; }
+        .new-value { color: #22c55e; font-size: 0.9rem; font-weight: 500; }
+        
+        .rollback-btn {
+            background: rgba(168, 85, 247, 0.1);
+            color: #a855f7;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .rollback-btn:hover {
+            background: #a855f7;
+            color: white;
+        }
+        
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+        .alert-success { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
+        .alert-error { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+    </style>
+</head>
+<body class="dark-theme">
+
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="changelog-container">
+    <div class="filter-header">
+        <h1>System Change Log</h1>
+        <p class="text-muted">Detailed audit trail of all record modifications</p>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="search-container">
+        <form th:action="@{/admin/changelog}" method="get">
+            <div class="advanced-filters">
+                <div class="filter-group">
+                    <label>Entity Type</label>
+                    <select name="entityName">
+                        <option value="">All Entities</option>
+                        <option value="Policy" th:selected="${entityName == 'Policy'}">Policy</option>
+                        <option value="User" th:selected="${entityName == 'User'}">User</option>
+                        <option value="Payment" th:selected="${entityName == 'Payment'}">Payment</option>
+                        <option value="PolicyCategory" th:selected="${entityName == 'PolicyCategory'}">Category</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>User</label>
+                    <input type="text" name="changedBy" th:value="${changedBy}" placeholder="Search by user email...">
+                </div>
+                <div class="filter-group">
+                    <label>From Date</label>
+                    <input type="datetime-local" name="startDate" th:value="${startDate}">
+                </div>
+                <div class="filter-group">
+                    <label>To Date</label>
+                    <input type="datetime-local" name="endDate" th:value="${endDate}">
+                </div>
+                <div class="filter-group" style="justify-content: flex-end;">
+                    <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem;">Apply Filters</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <table class="log-table">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>User</th>
+                <th>Entity</th>
+                <th>Action</th>
+                <th>Field</th>
+                <th>Changes</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="log : ${logs}">
+                <td th:text="${#temporals.format(log.changedAt, 'yyyy-MM-dd HH:mm:ss')}">2026-05-13 12:00</td>
+                <td th:text="${log.changedBy}">admin@example.com</td>
+                <td>
+                    <span th:text="${log.entityName}">Policy</span>
+                    <small class="text-muted" th:text="'#' + ${log.entityId}">#123</small>
+                </td>
+                <td>
+                    <span class="action-badge" 
+                          th:classappend="${log.actionType.startsWith('CREATE') ? 'action-create' : (log.actionType.startsWith('UPDATE') ? 'action-update' : (log.actionType == 'ROLLBACK' ? 'action-rollback' : 'action-delete'))}"
+                          th:text="${log.actionType.replace('_ROLLED_BACK', '')}">UPDATE</span>
+                </td>
+                <td th:text="${log.fieldName ?: '-'}">coverageAmount</td>
+                <td>
+                    <div class="value-diff" th:if="${log.actionType.startsWith('UPDATE') || log.actionType == 'ROLLBACK'}">
+                        <span class="old-value" th:text="${log.oldValue}">1000.00</span>
+                        <span class="new-value" th:text="${log.newValue}">1200.00</span>
+                    </div>
+                    <span th:if="${log.actionType.startsWith('CREATE')}" class="new-value">Record Created</span>
+                    <span th:if="${log.actionType == 'DELETE'}" class="old-value">Record Deleted</span>
+                </td>
+                <td>
+                    <div th:if="${log.actionType.endsWith('_ROLLED_BACK')}" class="text-muted" style="font-size: 0.8rem; font-style: italic;">
+                        <i class="fas fa-history"></i> Rolled Back
+                    </div>
+                    <form th:if="${(log.actionType.startsWith('UPDATE') || log.actionType.startsWith('CREATE')) && !log.actionType.endsWith('_ROLLED_BACK')}" th:action="@{/admin/changelog/rollback/{id}(id=${log.id})}" method="post" 
+                          onsubmit="return confirm('Are you sure you want to revert this change?')">
+                        <button type="submit" class="rollback-btn">
+                            <i class="fas fa-undo"></i> Rollback
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${logs.empty}">
+                <td colspan="7" style="text-align: center; padding: 3rem;">
+                    <i class="fas fa-history" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
+                    No change logs found matching your filters.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+
+</body>
+</html>

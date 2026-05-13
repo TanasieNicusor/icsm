@@ -1,5 +1,6 @@
 package com.example.icsm.model;
 
+import com.example.icsm.listener.EntityAuditListener;
 import com.example.icsm.model.enums.PaymentMethod;
 import com.example.icsm.model.enums.TransactionStatus;
 import jakarta.persistence.*;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payments")
+@EntityListeners(EntityAuditListener.class)
 @Getter
 @Setter
 @NoArgsConstructor

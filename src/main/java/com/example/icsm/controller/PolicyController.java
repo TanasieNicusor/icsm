@@ -283,12 +283,17 @@ public class PolicyController {
     }
 
     @PostMapping("/{id}/edit")
-    public String editPolicy(@PathVariable Long id, Policy policy) {
+    public String editPolicy(@PathVariable Long id, @ModelAttribute Policy policy) {
         Policy existing = policyService.getPolicyById(id).orElseThrow();
+        
+        // Ensure we are updating the existing record
+        policy.setId(id);
         policy.setCustomer(existing.getCustomer());
         policy.setAgent(existing.getAgent());
         policy.setParentPolicy(existing.getParentPolicy());
         policy.setStatus(existing.getStatus());
+        policy.setCreatedAt(existing.getCreatedAt()); // Preserve creation date
+        
         policyService.savePolicy(policy);
         return "redirect:/policies";
     }
